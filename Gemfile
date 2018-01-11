@@ -5,6 +5,8 @@ source 'https://rubygems.org'
  
  gem 'bootstrap-sass'
  
+ gem 'active_model_serializers', '~> 0.10.0'
+ 
  group :production do
    gem 'pg'
    gem 'rails_12factor'
@@ -22,6 +24,7 @@ source 'https://rubygems.org'
  gem 'turbolinks'
  gem 'bootstrap'
  gem 'figaro'
+ 
 
  group :development, :test do
    gem 'byebug'
