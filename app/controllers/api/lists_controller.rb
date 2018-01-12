@@ -2,9 +2,10 @@ class Api::ListsController < ApiController
    before_action :authenticated?
  
    def create
-      list = List.new
+      list = List.new(list_params)
+      user = User.find(params[:user_id])
         if list.save
- 
+         list.update_attribute(:user, user)   
         render json: list
         else
  
@@ -30,5 +31,10 @@ class Api::ListsController < ApiController
          else
          render json: { errors: list.errors.full_messages }, status: :unprocessable_entity
          end
+   end
+   
+   private
+   def list_params
+     params.require(:list).permit(:name, :private)
    end
 end
