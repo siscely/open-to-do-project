@@ -37,13 +37,15 @@ In your command line, cd into your work directory, create a new Rails app, new-r
 
 ## Configure Git and GitHub
 Sign into your GitHub account and create a new repository, we'll name ours “new-rails-project.” Initialize a git repo in your project directory with this command:
-
+```
 ~/path/to/work/directory/new-rails-project/
 $ git init
+```
 To push commits to GitHub, we have to specify the remote repository with git remote add origin.
-
+```
 ~/path/to/work/directory/new-rails-project/
 $ git remote add origin https://github.com/<user name>/new-rails-project.git
+```
 Your project is configured to use Git and GitHub.
 
 ## Add Default Gems
