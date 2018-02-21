@@ -106,3 +106,73 @@ Generate UserSerializer, ListSerializer, and ItemSerializer using the Rails Seri
 1. From the Rails console, confirm that  puts JSON.pretty_generate(ItemSerializer.new(Item.first).as_json) outputs the JSON representation of an Item.
 1. Validate the JSON output for each Serializer using JSONLint.
 
+## User Authentication
+As a user, I want to authenticate myself from the command line, using a username and password
+
+### Generate a Base Controller
+Create an ApiController from which the user, list, and items API controllers will inherent:
+```
+app/controllers/api_controller.rb
+ class ApiController < ApplicationController
+   skip_before_action :verify_authenticity_token
+  end
+```
+
+Create a private method named authenticated?. Other API controllers will use  authenticated? to ensure users are authorized:
+
+```
+app/controllers/api_controller.rb
+ class ApiController < ApplicationController
+   skip_before_action :verify_authenticity_token
+   private
+   def authenticated?
+ 
+     authenticate_or_request_with_http_basic {|username, password| User.where( username: username, password: password).present? }
+   end
+ end
+```
+
+Please note that using authenticate_or_request_with_http_basic would require your password to be stored as plaintext. In a production environment, you would want to implement hashing to "hash" your credentials. Alternatively, we could use the Devise valid_password? method if you are using Devise for authentication.
+
+To test authenticated?, you will need an API route that requires authentication.
+
+Edit routes.rb to provide API routes:
+
+app/config/routes.rb
+ ```
+   namespace :api, defaults: { format: :json } do
+     resources :users
+   end
+   ```
+### Generate a Users Controller
+Create UsersController to match the API routes. Make a new directory in  app/controllers named api. Create the new controller in that directory:
+
+app/controllers/api/users_controller.rb
+ ```
+ class Api::UsersController < ApiController
+ 
+   before_action :authenticated?
+ 
+   def index
+   end
+
+ end
+```
+Write index to return a UserSerializer-generated JSON representation of all users. The final line of the index method will look like:
+
+app/controllers/api/users_controller.rb
+```
+   def index
+     ...
+     render json: users, each_serializer: UserSerializer
+   end
+  ```
+### Test Your Code
+1. Create users via the Rails console.
+1. From the command line, retrieve all the users via a curl request. Replace  username and password with a valid username and password:
+
+Terminal
+$ curl -u username:password http://localhost:3000/api/users/
+Try to retrieve all users using an invalid username and password combination, verify the request fails.
+
+
