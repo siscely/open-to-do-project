@@ -268,3 +268,67 @@ Modify the curl request for creating users to send a request without a username.
 Modify the curl request for creating lists to send a request without a name. Confirm an error message is returned, and a list is not created.
 Modify the curl request for creating items to send a request without a description. Confirm an error message is returned, and an item is not created.
 
+## Destroy Lists
+As a user, I want to remove users and lists from the command line
+
+### Modify the Users Controller
+Add a destroy method to UsersController:
+
+app/controllers/api/users_controller.rb
+```
+ class Api::UsersController < ApiController
+   ...
+   def destroy
+     begin
+       user = User.find(params[:id])
+       user.destroy
+       render json: {}, status: :no_content
+     rescue ActiveRecord::RecordNotFound
+       render :json => {}, :status => :not_found
+     end
+   end
+   ...
+ end
+```
+Implement list deletion as well.
+
+### Test Your Code
+Test User deletion from the command line:
+
+Terminal
+$ curl -u username:password -X DELETE http://localhost:3000/api/users/1/
+Test List deletion from the command line:
+
+Terminal
+$ curl -u username:password -X DELETE http://localhost:3000/api/users/1/lists/1
+
+## Update Lists and Items
+As a user, I want to update list and item attributes from the command line
+
+### Controllers
+Allow users to change a list's private attribute from the command line. Add an  update method to ListsController:
+
+app/controllers/api/lists_controller.rb
+```
+ class Api::ListsController < ApiController
+ ...
+ def update
+   list = List.find(params[:id])
+   if list.update(list_params)
+     render json: list
+   else
+     render json: { errors: list.errors.full_messages }, status: :unprocessable_entity
+   end
+ end
+ ```
+Add the ability to update items and mark them as complete to ItemsController.
+
+### Test Your Code
+Test list permission updates from the command line:
+
+Terminal
+$ curl -X PUT -u username:password -d "list[private]=true" http://localhost:3000/api/lists/1
+Test item completion from the command line:
+
+Terminal
+$ curl -X PUT -u username:password -d "item[completed]=true" http://localhost:3000
