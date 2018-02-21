@@ -86,3 +86,23 @@ Gemfile
    gem 'pry-rails'
  end
  ```
+ ## Rails Serializers
+ As the Open To-do API, I want to return JSON representations of users, lists, and items
+
+### Generate Models
+Open To-do API requires three models: a User, a List and an Item. A user model represents a user, an item is a single to-do item, and a list belongs to a user, has several items, and a private attribute. Generate these three models with basic attributes.
+
+### Generate Serializers
+The Open To-do API must return formatted responses that users can read, and machines can generate and parse. The standard for most modern web APIs is JSON, which stands for JavaScript Object Notation. JSON is a lightweight data-interchange format.
+
+Converting a Rails object into a JSON representation is called serializing. Open To-do API will need to serialize users, lists, and items. Read our guide to Rails Serializers to turn your Rails objects into JSON.
+
+Generate UserSerializer, ListSerializer, and ItemSerializer using the Rails Serializers guide.
+
+### Test your code
+1. From the Rails console, insert at least one user, list, and item.
+1. From the Rails console, confirm that  puts JSON.pretty_generate(UserSerializer.new(User.first).as_json) outputs the JSON representation of a User.
+1. From the Rails console, confirm that  puts JSON.pretty_generate(ListSerializer.new(List.first).as_json) outputs the JSON representation of a List.
+1. From the Rails console, confirm that  puts JSON.pretty_generate(ItemSerializer.new(Item.first).as_json) outputs the JSON representation of an Item.
+1. Validate the JSON output for each Serializer using JSONLint.
+
