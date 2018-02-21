@@ -175,4 +175,96 @@ Terminal
 $ curl -u username:password http://localhost:3000/api/users/
 Try to retrieve all users using an invalid username and password combination, verify the request fails.
 
+## Create From the Command Line
+As a user, I want to create new users, lists, and items from the command line
+
+Edit Routes
+Edit routes.rb to provide the API routes for Lists and Items:
+
+app/config/routes.rb
+```
+   namespace :api, defaults: { format: :json } do
+     resources :users
+     resources :users do
+       resources :lists
+     end
+
+     resources :lists, only: [] do
+       resources :items, only: [:create]
+     end
+
+     resources :items, only: [:destroy]
+   end
+   ```
+### Create List and Item Controllers
+Create ListsController and ItemsController to match the API routes:
+
+app/controllers/api/lists_controller.rb
+```
+ class Api::ListsController < ApiController
+   before_action :authenticated?
+ 
+   def create
+   end
+ 
+ end
+ ```
+app/controllers/api/items_controller.rb
+```
+ class Api::ItemsController < ApiController
+   before_action :authenticated?
+ 
+   def create
+   end
+
+ end
+ ```
+In UsersController, add a create method and a private users_params method. User only requires username and password parameters:
+
+app/controllers/api/users_controller.rb
+```
+ class Api::UsersController < ApiController
+   ...
+   def create
+   end
+
+   private
+   def user_params
+     params.require(:user).permit(:username, :password)
+   end
+ end
+ ```
+Use user_params in create to create and save a new User:
+
+app/controllers/api/users_controller.rb
+```
+ class Api::UsersController < ApiController
+ ...
+   def create
+     user = User.new(user_params)
+     if user.save
+       render json: user
+     else
+        render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
+     end
+   end
+   ```
+## Test From Command Line
+Test create from the command line:
+
+Terminal
+$ curl -u username:password -d "user[username]=Sterling" -d "user[password]=Archer" http://localhost:3000/api/users/
+Once user creation is working, implement list creation. To test list creation, use curl from the command line to create a new list for the first user:
+
+Terminal
+$ curl -u username:password -d "list[name]=Things to do today" -d "list[permissions]=private" http://localhost:3000/api/users/1/lists
+Once list creation is working, implement item creation. To test item creation, use curl from the command line to create a new item for the first list:
+
+Terminal
+$ curl -u username:password -d "item[description]=Dance if you want to" http://localhost:3000/api/lists/1/items
+Test Your Code
+Modify the curl request for creating users to send a request without a password. Confirm an error message is returned, and a user is not created.
+Modify the curl request for creating users to send a request without a username. Confirm an error message is returned, and a user is not created.
+Modify the curl request for creating lists to send a request without a name. Confirm an error message is returned, and a list is not created.
+Modify the curl request for creating items to send a request without a description. Confirm an error message is returned, and an item is not created.
 
